@@ -12,11 +12,11 @@ import java.time.LocalDate;
 @Data
 @Builder
 public class Film {
-   //@NotEmpty
-    //@NotNull
+    @NotEmpty
+    @NotNull
     private String name;
     private int id;
-   //@Size(max = 200)
+    @Size(max = 200)
     private String description;
     private LocalDate releaseDate;
     private Duration duration;

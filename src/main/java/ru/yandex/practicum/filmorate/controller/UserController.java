@@ -17,34 +17,29 @@ import java.util.HashMap;
 @Slf4j
 public class UserController {
 
-    private final HashMap<String, User> users = new HashMap<>();
+    private final HashMap<Integer, User> users = new HashMap<>();
     private int Id = 1;
 
     @GetMapping
     public Collection<User> getAll() {
-        log.debug("Текущее количество пользователей: {}", users.size());
         return users.values();
     }
 
     @PostMapping
     public void create(@Valid @RequestBody User user) throws ValidationException {
         validateUser(user);
-        if (users.containsKey(user.getLogin())) {
-            log.warn("Пользователь с таким логином уже существует");
-            throw new ValidationException("Ошибка валидации");
-        }
         if (user.getName().isEmpty()) {
             user.setName(user.getLogin());
         }
         user.setId(Id++);
-        users.put(user.getLogin(), user);
+        users.put(user.getId(), user);
         log.debug("Текущее количество пользователей: {}", users.size());
     }
 
     @PutMapping
     public void update(@Valid @RequestBody User user) throws ValidationException {
         validateUser(user);
-        users.put(user.getLogin(), user);
+        users.put(user.getId(), user);
         log.debug("Текущее количество пользователей: {}", users.size());
     }
 

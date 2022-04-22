@@ -17,12 +17,11 @@ import java.util.HashMap;
 @Slf4j
 public class FilmController {
 
-    private final HashMap<String, Film> films = new HashMap<>();
+    private final HashMap<Integer, Film> films = new HashMap<>();
     private int Id = 1;
 
     @GetMapping
     public Collection<Film> getAll() {
-        log.debug("Текущее количество фильмов: {}", films.size());
         return films.values();
     }
 
@@ -31,14 +30,14 @@ public class FilmController {
         validateFilm(film);
         isInBase(film);
         film.setId(Id++);
-        films.put(film.getName(), film);
+        films.put(film.getId(), film);
         log.debug("Текущее количество фильмов: {}", films.size());
     }
 
     @PutMapping
     public void update(@Valid @RequestBody Film film) throws ValidationException {
         validateFilm(film);
-        films.put(film.getName(), film);
+        films.put(film.getId(), film);
         log.debug("Текущее количество фильмов: {}", films.size());
     }
 
@@ -47,7 +46,7 @@ public class FilmController {
             log.warn("Название не может быть пустым");
             throw new ValidationException("Ошибка валидации");
         }
-        if(film.getDescription().length() > 200) {
+        if (film.getDescription().length() > 200) {
             log.warn("Длина описания больше 200 символова");
             throw new ValidationException("Ошибка валидации");
         }
@@ -66,15 +65,15 @@ public class FilmController {
     }
 
     public void isInBase(Film film) throws ValidationException {
-        if (films.containsKey(film.getName())) {
-            if (films.get(film.getName()).getReleaseDate().isEqual(film.getReleaseDate())) {
+        for (Film f : films.values()) {
+            if (f.getName().equals(film.getName()) && f.getReleaseDate().equals(film.getReleaseDate())) {
                 log.warn("Такой фильм уже есть в базе");
                 throw new ValidationException("Ошибка валидации");
             }
         }
     }
 
-    public HashMap<String, Film> getFilms() {
+    public HashMap<Integer, Film> getFilms() {
         return films;
     }
 }

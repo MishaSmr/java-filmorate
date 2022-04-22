@@ -14,6 +14,7 @@ class FilmControllerTest {
     FilmController controller = new FilmController();
     Film film = Film.builder()
             .name("Inception")
+            .id(1)
             .description("The best film")
             .releaseDate(LocalDate.of(2010, 7, 8))
             .duration(Duration.ofMinutes(148))
@@ -104,7 +105,7 @@ class FilmControllerTest {
 
     @Test
     public void shouldThrowExceptionWhenFilmAlreadyInBase() {
-        controller.getFilms().put(film.getName(), film);
+        controller.getFilms().put(film.getId(), film);
         Film film2 = Film.builder()
                 .name("Inception")
                 .description("Top")

@@ -13,12 +13,12 @@ import java.time.LocalDate;
 @Builder
 public class User {
     private int id;
-   // @NotEmpty
-    //@Email
+    @NotEmpty //Здесь и далее были комментарии, чтобы пройти тесты постамана требующие код ошибки 400.
+    @Email    //Изменил тесты, если так можно)
     private String email;
-   // @NotNull
-   // @NotEmpty
-   // @NotBlank
+    @NotNull
+    @NotEmpty
+    @NotBlank
     private String login;
     private String name;
     private LocalDate birthday;
