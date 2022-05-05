@@ -4,12 +4,13 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
 
 import java.time.LocalDate;
 
-class UserControllerTest {
+class InMemoryUserStorageTest {
 
-    UserController controller = new UserController();
+    InMemoryUserStorage userStorage = new InMemoryUserStorage();
     User user = User.builder()
             .email("aaa@bbb.com")
             .login("Aa777")
@@ -19,7 +20,7 @@ class UserControllerTest {
 
     @Test
     public void shouldReturnSuccessfulValidateWhenAddUserWithCorrectValues() throws ValidationException {
-        controller.validateUser(user);
+        userStorage.validateUser(user);
     }
 
     @Test
@@ -28,7 +29,7 @@ class UserControllerTest {
         ValidationException ex = Assertions.assertThrows(
                 ValidationException.class,
                 () ->
-                        controller.validateUser(user));
+                        userStorage.validateUser(user));
         Assertions.assertEquals("Ошибка валидации",
                 ex.getMessage());
     }
@@ -39,7 +40,7 @@ class UserControllerTest {
         ValidationException ex = Assertions.assertThrows(
                 ValidationException.class,
                 () ->
-                        controller.validateUser(user));
+                        userStorage.validateUser(user));
         Assertions.assertEquals("Ошибка валидации",
                 ex.getMessage());
     }
@@ -50,7 +51,7 @@ class UserControllerTest {
         ValidationException ex = Assertions.assertThrows(
                 ValidationException.class,
                 () ->
-                        controller.validateUser(user));
+                        userStorage.validateUser(user));
         Assertions.assertEquals("Ошибка валидации",
                 ex.getMessage());
     }
@@ -61,7 +62,7 @@ class UserControllerTest {
         ValidationException ex = Assertions.assertThrows(
                 ValidationException.class,
                 () ->
-                        controller.validateUser(user));
+                        userStorage.validateUser(user));
         Assertions.assertEquals("Ошибка валидации",
                 ex.getMessage());
     }
@@ -72,7 +73,7 @@ class UserControllerTest {
         ValidationException ex = Assertions.assertThrows(
                 ValidationException.class,
                 () ->
-                        controller.validateUser(user));
+                        userStorage.validateUser(user));
         Assertions.assertEquals("Ошибка валидации",
                 ex.getMessage());
     }
