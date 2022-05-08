@@ -24,14 +24,14 @@ public class FilmService {
     }
 
     public void putLike(Long id, Long userId) {
-        Film film = filmStorage.getFilm(id);
+        Film film = filmStorage.get(id);
         film.getLikes().add(userId);
         film.setLikesCount(film.getLikes().size());
         log.debug("Текущее количество лайков фильма: {} — {}", film.getName(), film.getLikes().size());
     }
 
     public void removeLike(Long id, Long userId) {
-        Film film = filmStorage.getFilm(id);
+        Film film = filmStorage.get(id);
         if (!film.getLikes().contains(userId)) {
             throw new UserNotFoundException("Пользователь c таким id не найден.");
         }

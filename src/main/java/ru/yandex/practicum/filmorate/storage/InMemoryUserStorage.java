@@ -25,7 +25,7 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public User getUser(Long id) {
+    public User get(Long id) {
         if (!users.containsKey(id)) {
             log.warn("Пользователь c таким id не найден.");
             throw new UserNotFoundException("Пользователь c таким id не найден.");
@@ -44,6 +44,15 @@ public class InMemoryUserStorage implements UserStorage {
         users.put(user.getId(), user);
         log.debug("Текущее количество пользователей: {}", users.size());
         return user;
+    }
+
+    @Override
+    public void remove(User user) {
+        if (!users.containsKey(user.getId())) {
+            log.warn("Пользователь не найден.");
+            throw new UserNotFoundException("Пользователь не найден.");
+        }
+        users.remove(user.getId());
     }
 
     @Override

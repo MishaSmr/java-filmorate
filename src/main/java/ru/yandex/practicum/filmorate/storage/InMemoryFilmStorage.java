@@ -24,7 +24,7 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public Film getFilm (long id) {
+    public Film get(long id) {
         if (!films.containsKey(id)) {
             log.warn("Фильм c таким id не найден.");
             throw new FilmNotFoundException("Фильм c таким id не найден.");
@@ -40,6 +40,15 @@ public class InMemoryFilmStorage implements FilmStorage {
         film.setLikes(new HashSet<>());
         films.put(film.getId(), film);
         log.debug("Текущее количество фильмов: {}", films.size());
+    }
+
+    @Override
+    public void remove(Film film) {
+        if (!films.containsKey(film.getId())) {
+            log.warn("Фильм не найден.");
+            throw new FilmNotFoundException("Фильм не найден.");
+        }
+        films.remove(film.getId());
     }
 
     @Override

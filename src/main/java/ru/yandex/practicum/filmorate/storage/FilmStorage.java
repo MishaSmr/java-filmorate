@@ -7,7 +7,9 @@ import java.util.HashMap;
 
 public interface FilmStorage {
 
-    public Film getFilm(long id);
+    public Film get(long id);
+
+    public void remove(Film film);
 
     public Collection<Film> getAll();
 

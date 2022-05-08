@@ -9,6 +9,7 @@ import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -24,39 +25,39 @@ public class UserService {
     }
 
     public void addFriend(Long id, Long friendId) {
-        User user = userStorage.getUser(id);
-        User friend = userStorage.getUser(friendId);
+        User user = userStorage.get(id);
+        User friend = userStorage.get(friendId);
         user.getFriends().add(friendId);
         friend.getFriends().add(id);
         log.debug("Текущее количество друзей пользователя: {} — {}", user.getName(), user.getFriends().size());
     }
 
     public void removeFriend(Long id, Long friendId) {
-        User user = userStorage.getUser(id);
-        User friend = userStorage.getUser(friendId);
+        User user = userStorage.get(id);
+        User friend = userStorage.get(friendId);
         user.getFriends().remove(friendId);
         friend.getFriends().remove(id);
         log.debug("Текущее количество друзей пользователя: {} — {}", user.getName(), user.getFriends().size());
     }
 
-    public ArrayList<User> getFriends(Long id) {
-        ArrayList<User> friends = new ArrayList<>();
-        User user = userStorage.getUser(id);
+    public List<User> getFriends(Long id) {
+        List<User> friends = new ArrayList<>();
+        User user = userStorage.get(id);
         for (long friendId : user.getFriends()) {
-            friends.add(userStorage.getUser(friendId));
+            friends.add(userStorage.get(friendId));
         }
         return friends;
     }
 
-    public ArrayList<User> getMutualFriends(Long id, Long otherId) {
-        ArrayList<User> friends = new ArrayList<>();
-        User user = userStorage.getUser(id);
-        User otherUser = userStorage.getUser(otherId);
+    public List<User> getMutualFriends(Long id, Long otherId) {
+        List<User> friends = new ArrayList<>();
+        User user = userStorage.get(id);
+        User otherUser = userStorage.get(otherId);
         Set<Long> mutualFriendsId = user.getFriends().stream()
                 .filter(otherUser.getFriends()::contains)
                 .collect(Collectors.toSet());
         for (long friendId : mutualFriendsId) {
-            friends.add(userStorage.getUser(friendId));
+            friends.add(userStorage.get(friendId));
         }
         return friends;
     }

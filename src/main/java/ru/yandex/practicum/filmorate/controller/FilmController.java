@@ -35,16 +35,21 @@ public class FilmController {
     }
 
     @GetMapping("/{id}")
-    public Film getFilm(@PathVariable Long id) {
+    public Film get(@PathVariable Long id) {
         if (id == null || id <= 0) {
             throw new IncorrectPathVariableException("id");
         }
-        return filmStorage.getFilm(id);
+        return filmStorage.get(id);
     }
 
     @PostMapping
     public void create(@Valid @RequestBody Film film) throws ValidationException {
         filmStorage.create(film);
+    }
+
+    @DeleteMapping
+    public void remove(@RequestBody Film film) {
+        filmStorage.remove(film);
     }
 
     @PutMapping

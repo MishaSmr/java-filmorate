@@ -8,11 +8,13 @@ import java.util.HashMap;
 
 public interface UserStorage {
 
-    public User getUser(Long id);
+    public User get(Long id);
 
     public Collection<User> getAll();
 
     public User create(User user);
+
+    public void remove (User user);
 
     public void update(User user);
 

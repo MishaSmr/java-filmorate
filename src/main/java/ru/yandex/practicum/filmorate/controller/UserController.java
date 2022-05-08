@@ -36,12 +36,17 @@ public class UserController {
         if (id == null || id <= 0) {
             throw new IncorrectPathVariableException("id");
         }
-        return userStorage.getUser(id);
+        return userStorage.get(id);
     }
 
     @PostMapping
     public User create(@Valid @RequestBody User user) throws ValidationException {
         return userStorage.create(user);
+    }
+
+    @DeleteMapping
+    public void remove (@RequestBody User user) {
+       userStorage.remove(user);
     }
 
     @PutMapping
