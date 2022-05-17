@@ -4,14 +4,16 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.storage.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.InMemoryFilmStorage;
 
 import java.time.Duration;
 import java.time.LocalDate;
 
 
-class FilmControllerTest {
+class InMemoryFilmStorageTest {
 
-    FilmController controller = new FilmController();
+    InMemoryFilmStorage filmStorage = new InMemoryFilmStorage();
     Film film = Film.builder()
             .name("Inception")
             .id(1)
@@ -22,7 +24,7 @@ class FilmControllerTest {
 
     @Test
     public void shouldReturnSuccessfulValidateWhenAddFilmWithCorrectValues() throws ValidationException {
-        controller.validateFilm(film);
+        filmStorage.validateFilm(film);
     }
 
     @Test
@@ -31,7 +33,7 @@ class FilmControllerTest {
         ValidationException ex = Assertions.assertThrows(
                 ValidationException.class,
                 () ->
-                        controller.validateFilm(film));
+                        filmStorage.validateFilm(film));
         Assertions.assertEquals("Ошибка валидации",
                 ex.getMessage());
     }
@@ -39,7 +41,7 @@ class FilmControllerTest {
     @Test
     public void shouldReturnSuccessfulValidateWhenDescriptionIs200() throws ValidationException {
         film.setDescription("A".repeat(200));
-        controller.validateFilm(film);
+        filmStorage.validateFilm(film);
     }
 
     @Test
@@ -48,7 +50,18 @@ class FilmControllerTest {
         ValidationException ex = Assertions.assertThrows(
                 ValidationException.class,
                 () ->
-                        controller.validateFilm(film));
+                        filmStorage.validateFilm(film));
+        Assertions.assertEquals("Ошибка валидации",
+                ex.getMessage());
+    }
+
+    @Test
+    public void shouldThrowExceptionWhenDescriptionIsEmpty() {
+        film.setDescription("");
+        ValidationException ex = Assertions.assertThrows(
+                ValidationException.class,
+                () ->
+                        filmStorage.validateFilm(film));
         Assertions.assertEquals("Ошибка валидации",
                 ex.getMessage());
     }
@@ -59,7 +72,7 @@ class FilmControllerTest {
         ValidationException ex = Assertions.assertThrows(
                 ValidationException.class,
                 () ->
-                        controller.validateFilm(film));
+                        filmStorage.validateFilm(film));
         Assertions.assertEquals("Ошибка валидации",
                 ex.getMessage());
     }
@@ -67,7 +80,7 @@ class FilmControllerTest {
     @Test
     public void shouldReturnSuccessfulValidateWhenReleaseDateIsStartDay() throws ValidationException {
         film.setReleaseDate(LocalDate.of(1895, 12, 28));
-        controller.validateFilm(film);
+        filmStorage.validateFilm(film);
     }
 
     @Test
@@ -76,7 +89,7 @@ class FilmControllerTest {
         ValidationException ex = Assertions.assertThrows(
                 ValidationException.class,
                 () ->
-                        controller.validateFilm(film));
+                        filmStorage.validateFilm(film));
         Assertions.assertEquals("Ошибка валидации",
                 ex.getMessage());
     }
@@ -87,7 +100,7 @@ class FilmControllerTest {
         ValidationException ex = Assertions.assertThrows(
                 ValidationException.class,
                 () ->
-                        controller.validateFilm(film));
+                        filmStorage.validateFilm(film));
         Assertions.assertEquals("Ошибка валидации",
                 ex.getMessage());
     }
@@ -98,14 +111,14 @@ class FilmControllerTest {
         ValidationException ex = Assertions.assertThrows(
                 ValidationException.class,
                 () ->
-                        controller.validateFilm(film));
+                        filmStorage.validateFilm(film));
         Assertions.assertEquals("Ошибка валидации",
                 ex.getMessage());
     }
 
     @Test
     public void shouldThrowExceptionWhenFilmAlreadyInBase() {
-        controller.getFilms().put(film.getId(), film);
+        filmStorage.getFilms().put(film.getId(), film);
         Film film2 = Film.builder()
                 .name("Inception")
                 .description("Top")
@@ -115,7 +128,7 @@ class FilmControllerTest {
         ValidationException ex = Assertions.assertThrows(
                 ValidationException.class,
                 () ->
-                        controller.isInBase(film2));
+                        filmStorage.isInBase(film2));
         Assertions.assertEquals("Ошибка валидации",
                 ex.getMessage());
     }

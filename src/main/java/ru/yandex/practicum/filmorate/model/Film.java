@@ -8,17 +8,21 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.time.Duration;
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.TreeSet;
 
 @Data
 @Builder
 public class Film {
-    @NotEmpty
-    @NotNull
+    //@NotEmpty
+    //@NotNull
     private String name;
-    private int id;
-    @Size(max = 200)
+    private long id;
+    //@Size(max = 200)
     private String description;
     private LocalDate releaseDate;
     private Duration duration;
+    private HashSet<Long> likes;
+    private long likesCount;
 
 }

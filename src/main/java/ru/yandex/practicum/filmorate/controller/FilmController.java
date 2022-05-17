@@ -1,79 +1,89 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.exceptions.IncorrectParameterException;
+import ru.yandex.practicum.filmorate.exceptions.IncorrectPathVariableException;
 import ru.yandex.practicum.filmorate.model.Film;
 
 import javax.validation.Valid;
 
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
+import ru.yandex.practicum.filmorate.service.FilmService;
+import ru.yandex.practicum.filmorate.storage.InMemoryFilmStorage;
 
-import java.time.LocalDate;
 import java.util.Collection;
-import java.util.HashMap;
 
 @RestController
 @RequestMapping("/films")
 @Slf4j
 public class FilmController {
 
-    private final HashMap<Integer, Film> films = new HashMap<>();
-    private int Id = 1;
+    private final InMemoryFilmStorage filmStorage;
+    private final FilmService filmService;
+
+    @Autowired
+    public FilmController(InMemoryFilmStorage filmStorage, FilmService filmService) {
+        this.filmStorage = filmStorage;
+        this.filmService = filmService;
+    }
 
     @GetMapping
     public Collection<Film> getAll() {
-        return films.values();
+        return filmStorage.getAll();
+    }
+
+    @GetMapping("/{id}")
+    public Film get(@PathVariable Long id) {
+        if (id == null || id <= 0) {
+            throw new IncorrectPathVariableException("id");
+        }
+        return filmStorage.get(id);
     }
 
     @PostMapping
     public void create(@Valid @RequestBody Film film) throws ValidationException {
-        validateFilm(film);
-        isInBase(film);
-        film.setId(Id++);
-        films.put(film.getId(), film);
-        log.debug("Текущее количество фильмов: {}", films.size());
+        filmStorage.create(film);
+    }
+
+    @DeleteMapping
+    public void remove(@RequestBody Film film) {
+        filmStorage.remove(film);
     }
 
     @PutMapping
     public void update(@Valid @RequestBody Film film) throws ValidationException {
-        validateFilm(film);
-        films.put(film.getId(), film);
-        log.debug("Текущее количество фильмов: {}", films.size());
+        filmStorage.update(film);
     }
 
-    public void validateFilm(Film film) throws ValidationException {
-        if (film.getName().isEmpty()) {
-            log.warn("Название не может быть пустым");
-            throw new ValidationException("Ошибка валидации");
+    @PutMapping("/{id}/like/{userId}")
+    public void putLike(@PathVariable Long id, @PathVariable Long userId) {
+        if (id == null || id <= 0) {
+            throw new IncorrectPathVariableException("id");
         }
-        if (film.getDescription().length() > 200) {
-            log.warn("Длина описания больше 200 символова");
-            throw new ValidationException("Ошибка валидации");
+        if (userId == null || userId <= 0) {
+            throw new IncorrectPathVariableException("friendId");
         }
-        if (checkReleaseDate(film.getReleaseDate())) {
-            log.warn("Дата релиза не может быть раньше 28 декабря 1895 года");
-            throw new ValidationException("Ошибка валидации");
-        }
-        if (film.getDuration().isNegative() || film.getDuration().isZero()) {
-            log.warn("Продолжительность не может быть отрицательной");
-            throw new ValidationException("Ошибка валидации");
-        }
+        filmService.putLike(id, userId);
     }
 
-    private static boolean checkReleaseDate(LocalDate date) {
-        return date.isBefore(LocalDate.of(1895, 12, 28));
-    }
-
-    public void isInBase(Film film) throws ValidationException {
-        for (Film f : films.values()) {
-            if (f.getName().equals(film.getName()) && f.getReleaseDate().equals(film.getReleaseDate())) {
-                log.warn("Такой фильм уже есть в базе");
-                throw new ValidationException("Ошибка валидации");
-            }
+    @DeleteMapping("/{id}/like/{userId}")
+    public void removeLike(@PathVariable Long id, @PathVariable Long userId) {
+        if (id == null || id <= 0) {
+            throw new IncorrectPathVariableException("id");
         }
+        if (userId == null || userId <= 0) {
+            throw new IncorrectPathVariableException("friendId");
+        }
+        filmService.removeLike(id, userId);
     }
 
-    public HashMap<Integer, Film> getFilms() {
-        return films;
+    @GetMapping("/popular")
+    public Collection<Film> getTop(@RequestParam(defaultValue = "10") Integer count) {
+        if (count <= 0) {
+            throw new IncorrectParameterException("count");
+        }
+        return filmService.getTop(count);
     }
 }

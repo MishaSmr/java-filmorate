@@ -1,74 +1,88 @@
 package ru.yandex.practicum.filmorate.controller;
 
-import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.exceptions.IncorrectPathVariableException;
 import ru.yandex.practicum.filmorate.model.User;
 
 import javax.validation.Valid;
 
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
+import ru.yandex.practicum.filmorate.service.UserService;
+import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
 
-import java.time.LocalDate;
 import java.util.Collection;
-import java.util.HashMap;
 
 @RestController
 @RequestMapping("/users")
-@Slf4j
 public class UserController {
 
-    private final HashMap<Integer, User> users = new HashMap<>();
-    private int Id = 1;
+    private final InMemoryUserStorage userStorage;
+    private final UserService userService;
+
+    @Autowired
+    public UserController(InMemoryUserStorage userStorage, UserService userService) {
+        this.userStorage = userStorage;
+        this.userService = userService;
+    }
 
     @GetMapping
     public Collection<User> getAll() {
-        return users.values();
+        return userStorage.getAll();
+    }
+
+    @GetMapping("/{id}")
+    public User geUser(@PathVariable Long id) {
+        if (id == null || id <= 0) {
+            throw new IncorrectPathVariableException("id");
+        }
+        return userStorage.get(id);
     }
 
     @PostMapping
-    public void create(@Valid @RequestBody User user) throws ValidationException {
-        validateUser(user);
-        if (user.getName().isEmpty()) {
-            user.setName(user.getLogin());
-        }
-        user.setId(Id++);
-        users.put(user.getId(), user);
-        log.debug("Текущее количество пользователей: {}", users.size());
+    public User create(@Valid @RequestBody User user) throws ValidationException {
+        return userStorage.create(user);
+    }
+
+    @DeleteMapping
+    public void remove (@RequestBody User user) {
+       userStorage.remove(user);
     }
 
     @PutMapping
     public void update(@Valid @RequestBody User user) throws ValidationException {
-        validateUser(user);
-        users.put(user.getId(), user);
-        log.debug("Текущее количество пользователей: {}", users.size());
+        userStorage.update(user);
     }
 
-    public void validateUser(User user) throws ValidationException {
-        if (user.getEmail().isEmpty()) {
-            log.warn("e-mail не может быть пустой");
-            throw new ValidationException("Ошибка валидации");
+    @PutMapping("/{id}/friends/{friendId}")
+    public void addFriend(@PathVariable Long id, @PathVariable Long friendId) {
+        if (id == null || id <= 0) {
+            throw new IncorrectPathVariableException("id");
         }
-        if (!user.getEmail().contains("@")) {
-            log.warn("e-mail должен содержать знак @");
-            throw new ValidationException("Ошибка валидации");
+        if (friendId == null || friendId <= 0) {
+            throw new IncorrectPathVariableException("friendId");
         }
-        if (user.getLogin().isEmpty()) {
-            log.warn("Логин не может быть пустой");
-            throw new ValidationException("Ошибка валидации");
-        }
-        if (user.getLogin().contains(" ")) {
-            log.warn("Логин не может содержать пробелы");
-            throw new ValidationException("Ошибка валидации");
-        }
-        if (checkBirthday(user.getBirthday())) {
-            log.warn("Дата рождения не может быть в будущем:)");
-            throw new ValidationException("Ошибка валидации");
-        }
-
-    }
-    private static boolean checkBirthday(LocalDate date) {
-        return date.isAfter(LocalDate.now());
+        userService.addFriend(id, friendId);
     }
 
+    @DeleteMapping("/{id}/friends/{friendId}")
+    public void removeFriend(@PathVariable Long id, @PathVariable Long friendId) {
+        if (id == null || id <= 0) {
+            throw new IncorrectPathVariableException("id");
+        }
+        if (friendId == null || friendId <= 0) {
+            throw new IncorrectPathVariableException("friendId");
+        }
+        userService.removeFriend(id, friendId);
+    }
+
+    @GetMapping("/{id}/friends")
+    public Collection<User> getFriends(@PathVariable Long id) {
+
+        if (id == null || id <= 0) {
+            throw new IncorrectPathVariableException("id");
+        }
+        return userService.getFriends(id);
+    }
 }
 
