@@ -15,37 +15,37 @@ WHERE user_id = @user_id
 
 Получить всех друзей пользователя
 ```
-SELECT f.user1_id AS users_friends  
+SELECT f.user_id AS users_friends  
 FROM friends AS f  
-WHERE f.user2_id = @user_id  
+WHERE f.friend_id = @user_id  
 AND status = 1  
 UNION  
-SELECT f.user2_id AS users_friends  
+SELECT f.friend_id AS users_friends  
 FROM friends AS f  
-WHERE f.user1_id = @user_id  
+WHERE f.user_id = @user_id  
 AND status = 1  
 ```
 
 Получить общих друзей двух пользователей
 ```
 SELECT af1.users_friends AS mutual_friends
-FROM (SELECT f.user1_id AS users_friends
+FROM (SELECT f.user_id AS users_friends
 FROM friends AS f
-WHERE f.user2_id = @first_user_id
+WHERE f.friend_id = @first_user_id
 AND status = 1
 UNION
-SELECT f.user2_id AS users_friends
+SELECT f.friend_id AS users_friends
 FROM friends AS f
-WHERE f.user1_id = @first_user_id
+WHERE f.user_id = @first_user_id
 AND status = 1) AS af1
-INNER JOIN (SELECT f.user1_id AS users_friends
+INNER JOIN (SELECT f.user_id AS users_friends
 FROM friends AS f
-WHERE f.user2_id = @second_user_id
+WHERE friend_id = @second_user_id
 AND status = 1
 UNION
-SELECT f.user2_id AS users_friends
+SELECT friend_id AS users_friends
 FROM friends AS f
-WHERE f.user1_id = @second_user_id
+WHERE f.user_id = @second_user_id
 AND status = 1) AS af2 ON af1.users_friends=af2.users_friends;
 ```
 
