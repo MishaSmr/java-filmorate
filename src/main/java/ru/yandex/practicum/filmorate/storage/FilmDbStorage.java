@@ -121,7 +121,7 @@ public class FilmDbStorage implements FilmStorage {
         if (rows.next()) {
             return new Rating(id, rows.getString("name"));
         } else {
-            return new Rating(id, rows.getString("NULL"));
+            return new Rating(id, "NULL");
         }
     }
 
