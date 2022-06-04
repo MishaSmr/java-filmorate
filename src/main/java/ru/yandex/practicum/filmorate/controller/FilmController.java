@@ -11,7 +11,7 @@ import javax.validation.Valid;
 
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.service.FilmService;
-import ru.yandex.practicum.filmorate.storage.InMemoryFilmStorage;
+import ru.yandex.practicum.filmorate.storage.FilmDbStorage;
 
 import java.util.Collection;
 
@@ -20,11 +20,11 @@ import java.util.Collection;
 @Slf4j
 public class FilmController {
 
-    private final InMemoryFilmStorage filmStorage;
+    private final FilmDbStorage filmStorage;
     private final FilmService filmService;
 
     @Autowired
-    public FilmController(InMemoryFilmStorage filmStorage, FilmService filmService) {
+    public FilmController(FilmDbStorage filmStorage, FilmService filmService) {
         this.filmStorage = filmStorage;
         this.filmService = filmService;
     }
@@ -36,15 +36,15 @@ public class FilmController {
 
     @GetMapping("/{id}")
     public Film get(@PathVariable Long id) {
-        if (id == null || id <= 0) {
+        if (id == null) {
             throw new IncorrectPathVariableException("id");
         }
         return filmStorage.get(id);
     }
 
     @PostMapping
-    public void create(@Valid @RequestBody Film film) throws ValidationException {
-        filmStorage.create(film);
+    public Film create(@Valid @RequestBody Film film) throws ValidationException {
+        return filmStorage.create(film);
     }
 
     @DeleteMapping
@@ -53,16 +53,16 @@ public class FilmController {
     }
 
     @PutMapping
-    public void update(@Valid @RequestBody Film film) throws ValidationException {
-        filmStorage.update(film);
+    public Film update(@Valid @RequestBody Film film) throws ValidationException {
+        return filmStorage.update(film);
     }
 
     @PutMapping("/{id}/like/{userId}")
     public void putLike(@PathVariable Long id, @PathVariable Long userId) {
-        if (id == null || id <= 0) {
+        if (id == null) {
             throw new IncorrectPathVariableException("id");
         }
-        if (userId == null || userId <= 0) {
+        if (userId == null) {
             throw new IncorrectPathVariableException("friendId");
         }
         filmService.putLike(id, userId);
@@ -70,10 +70,10 @@ public class FilmController {
 
     @DeleteMapping("/{id}/like/{userId}")
     public void removeLike(@PathVariable Long id, @PathVariable Long userId) {
-        if (id == null || id <= 0) {
+        if (id == null) {
             throw new IncorrectPathVariableException("id");
         }
-        if (userId == null || userId <= 0) {
+        if (userId == null) {
             throw new IncorrectPathVariableException("friendId");
         }
         filmService.removeLike(id, userId);

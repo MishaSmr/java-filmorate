@@ -21,8 +21,7 @@ public class Film {
     //@Size(max = 200)
     private String description;
     private LocalDate releaseDate;
-    private Duration duration;
-    private HashSet<Long> likes;
-    private long likesCount;
-
+    private int duration;
+    private Rating mpa;
+    private int rate;
 }
