@@ -6,11 +6,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
-import ru.yandex.practicum.filmorate.dao.impl.FilmLikeDaoImpl;
-import ru.yandex.practicum.filmorate.dao.impl.FriendDaoImpl;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Rating;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.FilmService;
 import ru.yandex.practicum.filmorate.service.UserService;
 import ru.yandex.practicum.filmorate.storage.FilmDbStorage;
 import ru.yandex.practicum.filmorate.storage.UserDbStorage;
@@ -27,8 +26,8 @@ class FilmorateApplicationTests {
 
 	private final UserDbStorage userStorage;
 	private final FilmDbStorage filmStorage;
-	private final FriendDaoImpl friendDao;
-	private final FilmLikeDaoImpl filmLikeDao;
+	private final UserService userService;
+	private final FilmService filmService;
 
 	User user = User.builder()
 			.email("aaa@bbb.com")
@@ -90,21 +89,21 @@ class FilmorateApplicationTests {
 
 	@Test
 	public void testGetFriends() {
-		List<User> friends = friendDao.getFriends(1L);
+		List<User> friends = userService.getFriends(1L);
 		Assertions.assertEquals(3, friends.get(0).getId());
 	}
 
 	@Test
 	public void testAddFriends() {
-		friendDao.addFriend(1L, 2L);
-		List<User> friends = friendDao.getFriends(1L);
+		userService.addFriend(1L, 2L);
+		List<User> friends = userService.getFriends(1L);
 		Assertions.assertEquals(2, friends.size());
 	}
 
 	@Test
 	public void testRemoveFriends() {
-		friendDao.removeFriend(2L, 3L);
-		List<User> friends = friendDao.getFriends(2L);
+		userService.removeFriend(2L, 3L);
+		List<User> friends = userService.getFriends(2L);
 		Assertions.assertTrue(friends.isEmpty());
 	}
 
@@ -147,29 +146,29 @@ class FilmorateApplicationTests {
 
 	@Test
 	public void TestGetTopFilms() {
-		filmLikeDao.putLike(1L, 2L);
-		List<Film> films = filmLikeDao.getTop(1);
+		filmService.putLike(1L, 2L);
+		List<Film> films = filmService.getTop(1);
 		Assertions.assertEquals("Film first", films.get(0).getName());
 	}
 
 	@Test
 	public void testPutLike() {
-		filmLikeDao.putLike(2L, 1L);
-		filmLikeDao.putLike(2L, 2L);
-		List<Film> films = filmLikeDao.getTop(1);
+		filmService.putLike(2L, 1L);
+		filmService.putLike(2L, 2L);
+		List<Film> films = filmService.getTop(1);
 		Assertions.assertEquals("New film", films.get(0).getName());
-		filmLikeDao.removeLike(2L, 1L);
-		filmLikeDao.removeLike(2L, 2L);
+		filmService.removeLike(2L, 1L);
+		filmService.removeLike(2L, 2L);
 	}
 
 	@Test
 	public void TestRemoveLike() {
-		filmLikeDao.putLike(2L, 1L);
-		filmLikeDao.putLike(2L, 2L);
+		filmService.putLike(2L, 1L);
+		filmService.putLike(2L, 2L);
 
-		filmLikeDao.removeLike(2L, 1L);
-		filmLikeDao.removeLike(2L, 2L);
-		List<Film> films = filmLikeDao.getTop(1);
+		filmService.removeLike(2L, 1L);
+		filmService.removeLike(2L, 2L);
+		List<Film> films = filmService.getTop(1);
 		Assertions.assertEquals("Film first", films.get(0).getName());
 	}
 
