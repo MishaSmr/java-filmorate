@@ -2,48 +2,52 @@ package ru.yandex.practicum.filmorate.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exceptions.UserNotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.storage.FilmStorage;
-import ru.yandex.practicum.filmorate.storage.InMemoryFilmStorage;
+import ru.yandex.practicum.filmorate.storage.FilmDbStorage;
 
-import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j
 public class FilmService {
 
-    private final FilmStorage filmStorage;
-
     @Autowired
-    public FilmService(InMemoryFilmStorage filmStorage) {
+    private final FilmDbStorage filmStorage;
+    private final JdbcTemplate jdbcTemplate;
+
+    public FilmService(FilmDbStorage filmStorage, JdbcTemplate jdbcTemplate) {
         this.filmStorage = filmStorage;
+        this.jdbcTemplate = jdbcTemplate;
     }
 
     public void putLike(Long id, Long userId) {
-        Film film = filmStorage.get(id);
-        film.getLikes().add(userId);
-        film.setLikesCount(film.getLikes().size());
-        log.debug("Текущее количество лайков фильма: {} — {}", film.getName(), film.getLikes().size());
+        String sql = "insert into like_user(film_id, user_id ) " +
+                "values (?, ?)";
+        jdbcTemplate.update(sql, id, userId);
+        String sqlRate = "update film set rate = rate + 1 where id = ?";
+        jdbcTemplate.update(sqlRate, id);
+        log.debug("Лайк фильму c id {} от пользователя с id {}", id, userId);
     }
 
     public void removeLike(Long id, Long userId) {
-        Film film = filmStorage.get(id);
-        if (!film.getLikes().contains(userId)) {
+        SqlRowSet userRows = jdbcTemplate.queryForRowSet("select * from fr_user where id = ?", userId);
+        if (!userRows.next()) {
+            log.warn("Пользователь c таким id не найден.");
             throw new UserNotFoundException("Пользователь c таким id не найден.");
         }
-        film.getLikes().remove(userId);
-        film.setLikesCount(film.getLikes().size());
-        log.debug("Текущее количество лайков фильма: {} — {}", film.getName(), film.getLikes().size());
+        String sql = "delete from like_user where film_id = ? and user_id = ?";
+        jdbcTemplate.update(sql, id, userId);
+        String sqlRate = "update film set rate = rate - 1 where id = ?";
+        jdbcTemplate.update(sqlRate, id);
+        log.debug("Лайк фильму c id {} от пользователя с id {} удален", id, userId);
     }
 
     public List<Film> getTop(int count) {
-        return filmStorage.getAll().stream()
-                .sorted(Comparator.comparingLong(Film::getLikesCount).reversed())
-                .limit(count)
-                .collect(Collectors.toList());
+        String sql = "select * from film order by rate desc limit ?";
+        return jdbcTemplate.query(sql, (rs, rowNum) -> filmStorage.makeFilm(rs), count);
     }
 }

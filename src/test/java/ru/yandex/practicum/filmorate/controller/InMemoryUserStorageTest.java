@@ -20,7 +20,7 @@ class InMemoryUserStorageTest {
 
     @Test
     public void shouldReturnSuccessfulValidateWhenAddUserWithCorrectValues() throws ValidationException {
-        userStorage.validateUser(user);
+        userStorage.getValidator().validateUser(user);
     }
 
     @Test
@@ -29,7 +29,7 @@ class InMemoryUserStorageTest {
         ValidationException ex = Assertions.assertThrows(
                 ValidationException.class,
                 () ->
-                        userStorage.validateUser(user));
+                        userStorage.getValidator().validateUser(user));
         Assertions.assertEquals("Ошибка валидации",
                 ex.getMessage());
     }
@@ -40,7 +40,7 @@ class InMemoryUserStorageTest {
         ValidationException ex = Assertions.assertThrows(
                 ValidationException.class,
                 () ->
-                        userStorage.validateUser(user));
+                        userStorage.getValidator().validateUser(user));
         Assertions.assertEquals("Ошибка валидации",
                 ex.getMessage());
     }
@@ -51,7 +51,7 @@ class InMemoryUserStorageTest {
         ValidationException ex = Assertions.assertThrows(
                 ValidationException.class,
                 () ->
-                        userStorage.validateUser(user));
+                        userStorage.getValidator().validateUser(user));
         Assertions.assertEquals("Ошибка валидации",
                 ex.getMessage());
     }
@@ -62,7 +62,7 @@ class InMemoryUserStorageTest {
         ValidationException ex = Assertions.assertThrows(
                 ValidationException.class,
                 () ->
-                        userStorage.validateUser(user));
+                        userStorage.getValidator().validateUser(user));
         Assertions.assertEquals("Ошибка валидации",
                 ex.getMessage());
     }
@@ -73,7 +73,7 @@ class InMemoryUserStorageTest {
         ValidationException ex = Assertions.assertThrows(
                 ValidationException.class,
                 () ->
-                        userStorage.validateUser(user));
+                        userStorage.getValidator().validateUser(user));
         Assertions.assertEquals("Ошибка валидации",
                 ex.getMessage());
     }

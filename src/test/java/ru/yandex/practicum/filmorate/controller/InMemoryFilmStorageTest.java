@@ -7,7 +7,6 @@ import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.InMemoryFilmStorage;
 
-import java.time.Duration;
 import java.time.LocalDate;
 
 
@@ -19,12 +18,12 @@ class InMemoryFilmStorageTest {
             .id(1)
             .description("The best film")
             .releaseDate(LocalDate.of(2010, 7, 8))
-            .duration(Duration.ofMinutes(148))
+            .duration(148)
             .build();
 
     @Test
     public void shouldReturnSuccessfulValidateWhenAddFilmWithCorrectValues() throws ValidationException {
-        filmStorage.validateFilm(film);
+        filmStorage.getValidator().validateFilm(film);
     }
 
     @Test
@@ -33,7 +32,7 @@ class InMemoryFilmStorageTest {
         ValidationException ex = Assertions.assertThrows(
                 ValidationException.class,
                 () ->
-                        filmStorage.validateFilm(film));
+                        filmStorage.getValidator().validateFilm(film));
         Assertions.assertEquals("Ошибка валидации",
                 ex.getMessage());
     }
@@ -41,7 +40,7 @@ class InMemoryFilmStorageTest {
     @Test
     public void shouldReturnSuccessfulValidateWhenDescriptionIs200() throws ValidationException {
         film.setDescription("A".repeat(200));
-        filmStorage.validateFilm(film);
+        filmStorage.getValidator().validateFilm(film);
     }
 
     @Test
@@ -50,7 +49,7 @@ class InMemoryFilmStorageTest {
         ValidationException ex = Assertions.assertThrows(
                 ValidationException.class,
                 () ->
-                        filmStorage.validateFilm(film));
+                        filmStorage.getValidator().validateFilm(film));
         Assertions.assertEquals("Ошибка валидации",
                 ex.getMessage());
     }
@@ -61,7 +60,7 @@ class InMemoryFilmStorageTest {
         ValidationException ex = Assertions.assertThrows(
                 ValidationException.class,
                 () ->
-                        filmStorage.validateFilm(film));
+                        filmStorage.getValidator().validateFilm(film));
         Assertions.assertEquals("Ошибка валидации",
                 ex.getMessage());
     }
@@ -72,7 +71,7 @@ class InMemoryFilmStorageTest {
         ValidationException ex = Assertions.assertThrows(
                 ValidationException.class,
                 () ->
-                        filmStorage.validateFilm(film));
+                        filmStorage.getValidator().validateFilm(film));
         Assertions.assertEquals("Ошибка валидации",
                 ex.getMessage());
     }
@@ -80,7 +79,7 @@ class InMemoryFilmStorageTest {
     @Test
     public void shouldReturnSuccessfulValidateWhenReleaseDateIsStartDay() throws ValidationException {
         film.setReleaseDate(LocalDate.of(1895, 12, 28));
-        filmStorage.validateFilm(film);
+        filmStorage.getValidator().validateFilm(film);
     }
 
     @Test
@@ -89,29 +88,29 @@ class InMemoryFilmStorageTest {
         ValidationException ex = Assertions.assertThrows(
                 ValidationException.class,
                 () ->
-                        filmStorage.validateFilm(film));
+                        filmStorage.getValidator().validateFilm(film));
         Assertions.assertEquals("Ошибка валидации",
                 ex.getMessage());
     }
 
     @Test
     public void shouldThrowExceptionWhenDurationIsZero() {
-        film.setDuration(Duration.ofMinutes(0));
+        film.setDuration(0);
         ValidationException ex = Assertions.assertThrows(
                 ValidationException.class,
                 () ->
-                        filmStorage.validateFilm(film));
+                        filmStorage.getValidator().validateFilm(film));
         Assertions.assertEquals("Ошибка валидации",
                 ex.getMessage());
     }
 
     @Test
     public void shouldThrowExceptionWhenDurationIsNegative() {
-        film.setDuration(Duration.ofMinutes(-1));
+        film.setDuration(-1);
         ValidationException ex = Assertions.assertThrows(
                 ValidationException.class,
                 () ->
-                        filmStorage.validateFilm(film));
+                        filmStorage.getValidator().validateFilm(film));
         Assertions.assertEquals("Ошибка валидации",
                 ex.getMessage());
     }
@@ -123,7 +122,7 @@ class InMemoryFilmStorageTest {
                 .name("Inception")
                 .description("Top")
                 .releaseDate(LocalDate.of(2010, 7, 8))
-                .duration(Duration.ofMinutes(148))
+                .duration(148)
                 .build();
         ValidationException ex = Assertions.assertThrows(
                 ValidationException.class,
